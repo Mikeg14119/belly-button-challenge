@@ -24,7 +24,7 @@ d3.json("https://2u-data-curriculum-team.s3.amazonaws.com/dataviz-classroom/v1.1
       yaxis: { title: "OTU IDs" }
     };
 
-    Plotly.newPlot("bar", data, layout);
+    Plotly.newPlot("bar", data1, layout);
 
     // Update chart when a new sample is selected
     function optionChanged(selected_id) {
@@ -121,26 +121,46 @@ d3.json("https://2u-data-curriculum-team.s3.amazonaws.com/dataviz-classroom/v1.1
       Plotly.newPlot('bubble', data2, layout2);
     }
 
+// Dropdown
     dropdown.on("change", function() {
       let selected_id = d3.select(this).property("value");
       optionChanged(selected_id);
     });
 
-    // Display the sample metadata
+// Display the sample metadata
     let metadata = data.metadata;
-    let sampleMetadata = metadata[0];
+    let metadataContainer = d3.select("#sample-metadata");
 
-    let metadataContainer = d3.select("#metadata-container");
+// Function to populate the demographic info table
+    function populateMetadata(selected_id) {
+  // Find the selected sample's metadata
+      let selectedMetadata = metadata.find(entry => entry.id === parseInt(selected_id));
 
-    Object.entries(sampleMetadata).forEach(([key, value]) => {
-      let keyValueContainer = metadataContainer.append("div").classed("key-value-container", true);
-      keyValueContainer.append("p").text(`${key}:`);
-      keyValueContainer.append("p").text(value);
-    });
+  // Clear the existing table
+      metadataContainer.html("");
+
+  // Populate the table with the selected sample's metadata
+    Object.entries(selectedMetadata).forEach(([key, value]) => {
+        let keyValueContainer = metadataContainer.append("div").classed("key-value-container", true);
+        keyValueContainer.append("p").text(`${key}:`);
+        keyValueContainer.append("p").text(value);
+      });
+    }
+
+// Display the sample metadata for the initial sample
+    let initialMetadata = metadata.find(entry => entry.id === parseInt(initialSample.id));
+    populateMetadata(initialSample.id);
+
+// Function to handle changes in the dropdown selection
+    function dropdownChange() {
+      let selected_id = d3.select(this).property("value");
+      optionChanged(selected_id);
+      populateMetadata(selected_id);
+    }
+
+    dropdown.on("change", dropdownChange);
+
   })
   .catch(function(error) {
-    console.log(error);
+  console.log(error);
   });
-
-
-
