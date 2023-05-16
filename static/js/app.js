@@ -8,6 +8,13 @@ d3.json("https://2u-data-curriculum-team.s3.amazonaws.com/dataviz-classroom/v1.1
     let initialOtuIds = initialSample.otu_ids.slice(0, 10).reverse().map(id => "OTU " + id);
     let initialOtuLabels = initialSample.otu_labels.slice(0, 10).reverse();
 
+    // Populate the dropdown options with test subject IDs
+    samples.forEach(sample => {
+      dropdown.append("option")
+        .attr("value", sample.id)
+        .text(sample.id);
+    });
+
     let trace1 = {
       x: initialSampleValues,
       y: initialOtuIds,
